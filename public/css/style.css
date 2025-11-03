@@ -1,0 +1,82 @@
+html, body {
+	height: 100%;
+}
+
+* {
+	font-family: cursive, sans-serif;
+}
+
+h1 {
+	text-align: center;
+}
+
+body {
+	background-image: url("../images/background.jpg");
+	text-align: center;
+}
+
+a {
+	text-decoration: none;
+}
+
+.caption {
+	font-size: 14px;
+}
+
+canvas {
+	display: block;
+	width: 100% !important;
+	height: 100% !important;
+}
+
+.gallery {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 50px;
+	justify-content: center;
+}
+
+.polaroid {
+	background: white;
+	padding: 10px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	text-align: center;
+	cursor: pointer;
+	filter: grayscale(100%);
+	position: relative;
+        width: 280px;
+        height: 390px;
+	overflow: hidden;
+}
+
+.polaroid:hover {
+	transform: scale(1.1);
+	filter: grayscale(0%);
+}
+
+.polaroidPicture {
+	width: 93%;
+}
+
+.polaroidPicture, .polaroidText {
+	position: absolute;
+	transition: opacity 0.6s ease;
+}
+
+.polaroidText {
+	opacity: 0;
+	text-align: center;
+	padding: 10px 20px 30px 10px; /* extra bottom padding */
+	font-size: 11px;
+	overflow-y: auto;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+.polaroidText.visible {
+  opacity: 1;
+}
+
+.polaroidPicture.hidden {
+  opacity: 0;
+}
