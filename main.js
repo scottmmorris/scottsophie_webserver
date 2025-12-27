@@ -96,6 +96,8 @@ addMarker('travel/portland2025.html', radius, scene, markers, 50.5491, -2.43302)
 addMarker('travel/venice2025.html', radius, scene, markers, 45.4349, 12.3269);
 addMarker('travel/cogne2025.html', radius, scene, markers, 45.6084, 7.3559);
 addMarker('travel/dartmoor2025.html', radius, scene, markers, 50.5063, -3.8922);
+addMarker('travel/blakeney2025.html', radius, scene, markers, 52.9598, 1.0110);
+addMarker('travel/austria2025.html', radius, scene, markers, 47.1301, 10.2754);
 
 // 🖱️ Raycaster for clicks
 const raycaster = new THREE.Raycaster();
