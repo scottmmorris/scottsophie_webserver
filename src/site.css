@@ -60,5 +60,4 @@ a { text-decoration: none; color: inherit; }
 
 /* Globe page */
 .globe-page { overflow: hidden; background: #000; }
-.globe-page .main-section { height: 100%; }
 .globe-page canvas { display: block; width: 100% !important; height: 100% !important; }
