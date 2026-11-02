@@ -57,6 +57,8 @@ a { text-decoration: none; color: inherit; }
 #result { min-height: 3.2em; }
 #again { padding: .5rem 1.2rem; font-size: 1rem; border: 2px solid var(--amber); border-radius: 99px; background: transparent; color: var(--amber); cursor: pointer; }
 #again:hover { background: var(--amber); color: var(--ink); }
+#again:disabled { opacity: .5; cursor: not-allowed; }
+#again:disabled:hover { background: transparent; color: var(--amber); }
 
 /* Globe page */
 .globe-page { overflow: hidden; background: #000; }

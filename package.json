@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build:wasm": "node scripts/build-wasm.mjs",
     "dev": "vite --host",
+    "prebuild": "npm run build:wasm",
     "build": "vite build",
     "preview": "vite preview --host"
   },

@@ -18,6 +18,8 @@ To add a new Tech project: make `tech/<name>/index.html`, add it to `build.rollu
 
 ## Develop
 
+`npm run dev` works without Emscripten for the dead-reckoning and GPS runs. To try the Kalman run locally, install and activate the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) so `em++` is available on `PATH`, then run `npm run build:wasm`. That script downloads Eigen 3.4.0 into `node_modules/.cache` and builds the filter into the ignored `public/wasm/` directory.
+
 ```
 npm install
 npm run dev
@@ -26,6 +28,6 @@ npm run dev
 ## Deploy
 
 1. Repo **Settings > Pages > Build and deployment > Source: GitHub Actions**.
-2. Push to `main`. `.github/workflows/deploy.yml` builds and publishes `dist/`.
+2. Push to `main`. `.github/workflows/deploy.yml` installs Emscripten, builds the Eigen-backed WebAssembly filter, then publishes `dist/`.
 
 To build onto a server instead: `OUT_DIR=/var/www/html npm run build`.

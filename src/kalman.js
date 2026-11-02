@@ -16,14 +16,30 @@ const DRAG = 1.5;            // m/s^2 slowdown when Up is released
 const V_MAX = 20;            // m/s
 
 const GPS_PERIOD = 0.5;      // s between GPS readings
-const GPS_SIGMA = 3;         // m
+const GPS_SIGMA = 1;         // m
 const SPEED_SIGMA = 0.3;     // m/s
 const YAW_SIGMA = 0.05;      // rad/s
 const YAW_BIAS = 0.05;       // rad/s, constant gyro error
 const SPEED_SCALE = 1.04;    // wheel-speed reading is 4% high
+const OBSTACLES = [
+  { x: -16, y: 20 }, { x: -5, y: 20 }, { x: 9, y: 20 }, { x: 22, y: 20 },
+  { x: -28, y: 33 }, { x: -12, y: 33 }, { x: 5, y: 33 }, { x: 20, y: 33 }, { x: 34, y: 33 },
+  { x: -36, y: 48 }, { x: -20, y: 48 }, { x: -2, y: 48 }, { x: 15, y: 48 }, { x: 31, y: 48 },
+  { x: -32, y: 63 }, { x: -14, y: 63 }, { x: 3, y: 63 }, { x: 23, y: 63 }, { x: 40, y: 63 },
+  { x: -43, y: 78 }, { x: -25, y: 78 }, { x: -7, y: 78 }, { x: 11, y: 78 }, { x: 30, y: 78 }, { x: 46, y: 78 },
+  { x: -38, y: 95 }, { x: -19, y: 95 }, { x: 0, y: 95 }, { x: 18, y: 95 }, { x: 37, y: 95 },
+  { x: -45, y: 112 }, { x: -26, y: 112 }, { x: -8, y: 112 }, { x: 12, y: 112 }, { x: 29, y: 112 }, { x: 48, y: 112 },
+  { x: -37, y: 130 }, { x: -18, y: 130 }, { x: 2, y: 130 }, { x: 22, y: 130 }, { x: 42, y: 130 },
+  { x: -30, y: 148 }, { x: -10, y: 148 }, { x: 11, y: 148 }, { x: 33, y: 148 },
+  { x: -18, y: 166 }, { x: 0, y: 166 }, { x: 18, y: 166 }, { x: 36, y: 166 },
+];
+const OBSTACLE_RADIUS = 2.5;
 
 const keys = new Set();
+let attempt = 0;
 let s;
+let kalmanFilter;
+let kalmanModulePromise;
 
 function randn() {
   const u = 1 - Math.random(), v = Math.random();
@@ -31,16 +47,46 @@ function randn() {
 }
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
-function reset() {
+function loadKalmanFilter() {
+  if (!kalmanModulePromise) {
+    const moduleUrl = new URL('../' + 'wasm/kalman_filter.js', import.meta.url);
+    kalmanModulePromise = import(/* @vite-ignore */ moduleUrl.href)
+      .then(({ default: createKalmanModule }) => createKalmanModule())
+      .then((wasmModule) => {
+        kalmanFilter = new wasmModule.EKF();
+        return kalmanFilter;
+      });
+  }
+  return kalmanModulePromise;
+}
+
+function reset(nextAttempt = false) {
+  if (nextAttempt) attempt += 1;
   const th0 = Math.PI / 2; // facing "up" the screen
+  const mode = attempt === 0 ? 'dead-reckoning' : attempt === 1 ? 'gps' : 'kalman';
   s = {
-    phase: 'ready', t: 0, dist: 0,
+    phase: 'ready', mode, t: 0, dist: 0, hits: new Set(),
     x: 0, y: 0, th: th0, v: 0, steer: 0,
-    dr: { x: 0, y: 0, th: th0 },
-    path: [[0, 0]], drPath: [[0, 0]],
-    gps: [], gpsTimer: 0, gpsErrSum: 0,
+    estimate: { x: 0, y: 0, th: th0 },
+    path: [[0, 0]], estimatePath: [[0, 0]], gpsTimer: 0, gpsErrSum: 0,
   };
   resultEl.textContent = '';
+  document.getElementById('again').disabled = true;
+
+  if (attempt >= 2) {
+    s.phase = 'loading';
+    loadKalmanFilter().then((filter) => {
+      if (s.phase !== 'loading') return;
+      filter.reset(0, 0, th0);
+      s.phase = 'ready';
+    }).catch((error) => {
+      if (s.phase !== 'loading') return;
+      s.phase = 'error';
+      resultEl.textContent = `Kalman filter unavailable. Build the WebAssembly module first: ${error.message}`;
+    });
+  } else {
+    kalmanFilter?.reset(0, 0, th0);
+  }
 }
 
 function step(dt) {
@@ -63,42 +109,89 @@ function step(dt) {
   // Dead reckoning: integrate noisy speed and turn-rate readings
   const vMeas = s.v * SPEED_SCALE + SPEED_SIGMA * randn();
   const yawMeas = yawRate + YAW_BIAS + YAW_SIGMA * randn();
-  s.dr.th += yawMeas * dt;
-  s.dr.x += vMeas * Math.cos(s.dr.th) * dt;
-  s.dr.y += vMeas * Math.sin(s.dr.th) * dt;
+
+  const estimate = s.estimate;
+  if (s.mode === 'kalman') {
+    kalmanFilter.predict(vMeas, yawMeas, dt, SPEED_SIGMA, YAW_SIGMA);
+    estimate.x = kalmanFilter.getX();
+    estimate.y = kalmanFilter.getY();
+    estimate.th = kalmanFilter.getHeading();
+  } else {
+    estimate.th += yawMeas * dt;
+    estimate.x += vMeas * Math.cos(estimate.th) * dt;
+    estimate.y += vMeas * Math.sin(estimate.th) * dt;
+  }
+
+  for (const [index, obstacle] of OBSTACLES.entries()) {
+    if (!s.hits.has(index) && Math.hypot(s.x - obstacle.x, s.y - obstacle.y) <= OBSTACLE_RADIUS + 2.25) {
+      s.hits.add(index);
+    }
+  }
 
   // GPS: absolute but jumpy
   s.gpsTimer += dt;
   if (s.gpsTimer >= GPS_PERIOD) {
     s.gpsTimer -= GPS_PERIOD;
     const nx = GPS_SIGMA * randn(), ny = GPS_SIGMA * randn();
-    s.gps.push([s.x + nx, s.y + ny]);
+    const gpsX = s.x + nx, gpsY = s.y + ny;
     s.gpsErrSum += Math.hypot(nx, ny);
+
+    if (s.mode === 'gps') {
+      estimate.x = gpsX;
+      estimate.y = gpsY;
+    } else if (s.mode === 'kalman') {
+      kalmanFilter.update(gpsX, gpsY, GPS_SIGMA);
+      estimate.x = kalmanFilter.getX();
+      estimate.y = kalmanFilter.getY();
+      estimate.th = kalmanFilter.getHeading();
+    }
   }
 
-  // TODO: run the Kalman filter here (predict with vMeas/yawMeas, update with GPS)
-
   s.path.push([s.x, s.y]);
-  s.drPath.push([s.dr.x, s.dr.y]);
+  s.estimatePath.push([estimate.x, estimate.y]);
 
   s.t += dt;
   if (s.t >= MAX_T) {
     s.t = MAX_T;
     s.phase = 'done';
-    const drErr = Math.hypot(s.dr.x - s.x, s.dr.y - s.y);
-    const gpsErr = s.gpsErrSum / Math.max(1, s.gps.length);
+    s.overview = createOverview();
+    document.getElementById('again').disabled = false;
+    const positionError = Math.hypot(estimate.x - s.x, estimate.y - s.y);
+    const hitText = `${s.hits.size} obstacle${s.hits.size === 1 ? '' : 's'} hit`;
+    const modeText = s.mode === 'dead-reckoning' ? 'dead reckoning' : s.mode === 'gps' ? 'GPS updates' : 'the Kalman filter';
+    const nextMode = attempt === 0 ? 'GPS updates' : 'the Kalman filter';
     resultEl.textContent =
-      `The car travelled ${s.dist.toFixed(0)} m. Dead reckoning ended ${drErr.toFixed(1)} m from the true position, ` +
-      `and that error keeps growing the longer you drive. GPS readings were off by ${gpsErr.toFixed(1)} m on average: ` +
-      `a smaller error that never grows, but never goes away either. A Kalman filter combines both.`;
+      `Using ${modeText}, you travelled ${s.dist.toFixed(0)} m and ended ${positionError.toFixed(1)} m from your true position. ` +
+      `${hitText}. The white line is the true path; the orange dashed line is the route shown by the localization system. ` +
+      `Drive again to try ${nextMode}.`;
   }
 }
 
 // ---- Drawing ----
-const toScreen = (wx, wy) => [W / 2 + (wx - s.x) * SCALE, H * 0.65 - (wy - s.y) * SCALE];
+function createOverview() {
+  const points = [...s.path, ...s.estimatePath, ...OBSTACLES.map(({ x, y }) => [x, y])];
+  const xs = points.map(([x]) => x);
+  const ys = points.map(([, y]) => y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const padding = 48;
+  const scale = Math.min(
+    SCALE,
+    (W - padding * 2) / Math.max(maxX - minX, 1),
+    (H - padding * 2) / Math.max(maxY - minY, 1),
+  );
+  return { centerX: (minX + maxX) / 2, centerY: (minY + maxY) / 2, scale };
+}
+
+function toScreen(wx, wy) {
+  if (s.overview) {
+    return [W / 2 + (wx - s.overview.centerX) * s.overview.scale, H / 2 - (wy - s.overview.centerY) * s.overview.scale];
+  }
+  return [W / 2 + (wx - s.estimate.x) * SCALE, H * 0.65 - (wy - s.estimate.y) * SCALE];
+}
 
 function drawGrid() {
-  const spacing = 10 * SCALE;
+  const spacing = 10 * (s.overview ? s.overview.scale : SCALE);
   ctx.strokeStyle = '#1e4363';
   ctx.lineWidth = 1;
   const [ox, oy] = toScreen(0, 0);
@@ -122,15 +215,30 @@ function drawPath(points, color, dashed) {
 }
 
 function drawCar() {
-  const [cx, cy] = toScreen(s.x, s.y);
+  const [cx, cy] = toScreen(s.estimate.x, s.estimate.y);
+  const scale = s.overview ? s.overview.scale : SCALE;
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.rotate(-s.th);
+  ctx.rotate(-s.estimate.th);
   ctx.fillStyle = '#e8f1f8';
-  ctx.fillRect(-2.25 * SCALE, -1 * SCALE, 4.5 * SCALE, 2 * SCALE);
+  ctx.fillRect(-2.25 * scale, -1 * scale, 4.5 * scale, 2 * scale);
   ctx.fillStyle = '#0f2a43';
-  ctx.fillRect(0.4 * SCALE, -0.8 * SCALE, 1.2 * SCALE, 1.6 * SCALE); // windscreen marks the front
+  ctx.fillRect(0.4 * scale, -0.8 * scale, 1.2 * scale, 1.6 * scale); // windscreen marks the front
   ctx.restore();
+}
+
+function drawObstacles() {
+  const scale = s.overview ? s.overview.scale : SCALE;
+  for (const [index, obstacle] of OBSTACLES.entries()) {
+    const [x, y] = toScreen(obstacle.x, obstacle.y);
+    ctx.fillStyle = s.hits.has(index) ? '#73808a' : '#ff6b5a';
+    ctx.beginPath();
+    ctx.arc(x, y, OBSTACLE_RADIUS * scale, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = '#12263a';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
 }
 
 function drawText(text, x, y, size, align = 'left') {
@@ -144,25 +252,21 @@ function draw() {
   ctx.fillStyle = '#12263a';
   ctx.fillRect(0, 0, W, H);
   drawGrid();
-  drawPath(s.drPath, '#ffb347', true);
-  drawPath(s.path, '#ffffff', false);
-  ctx.fillStyle = '#ff6b5a';
-  for (const [x, y] of s.gps) {
-    const [sx, sy] = toScreen(x, y);
-    ctx.beginPath();
-    ctx.arc(sx, sy, 3.5, 0, 2 * Math.PI);
-    ctx.fill();
+  drawObstacles();
+  if (s.phase === 'done') {
+    drawPath(s.path, '#ffffff', false);
+    drawPath(s.estimatePath, '#ffb347', true);
   }
   drawCar();
 
   drawText(`Time ${s.t.toFixed(1)} / ${MAX_T} s`, 16, 28, 18);
   drawText(`Speed ${(s.v * 3.6).toFixed(0)} km/h`, 16, 52, 18);
+  drawText(`Mode: ${s.mode === 'dead-reckoning' ? 'Dead reckoning' : s.mode === 'gps' ? 'GPS updates' : 'Kalman filter'}`, 16, 76, 18);
+  drawText(`Obstacles hit: ${s.hits.size}`, 16, 100, 18);
 
   if (s.phase === 'ready') drawText('Press \u2191 to start driving', W / 2, H * 0.3, 24, 'center');
-  if (s.phase === 'done') {
-    drawText("Time's up", W / 2, H * 0.28, 32, 'center');
-    drawText('Press Enter to drive again', W / 2, H * 0.28 + 32, 18, 'center');
-  }
+  if (s.phase === 'loading') drawText('Loading Kalman filter...', W / 2, H * 0.3, 24, 'center');
+  if (s.phase === 'error') drawText('Kalman filter unavailable', W / 2, H * 0.3, 24, 'center');
 }
 
 // ---- Input and loop ----
@@ -173,12 +277,12 @@ window.addEventListener('keydown', (e) => {
     keys.add(e.code);
     if (s.phase === 'ready') s.phase = 'running';
   } else if (e.code === 'Enter' && s.phase === 'done' && e.target === document.body) {
-    reset();
+    reset(true);
   }
 });
 window.addEventListener('keyup', (e) => keys.delete(e.code));
 window.addEventListener('blur', () => keys.clear());
-document.getElementById('again').addEventListener('click', reset);
+document.getElementById('again').addEventListener('click', () => reset(true));
 
 let last = performance.now();
 function frame(now) {

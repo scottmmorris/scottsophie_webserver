@@ -11,15 +11,15 @@
   <a class="back" href="../">&larr; Tech</a>
   <main class="column wide">
     <h1>The need for Kalman filters</h1>
-    <p>Every sensor on a car is a little wrong. GPS jumps around by a few metres, and speed and turn-rate readings add up to a bigger error the longer you drive. Drive the car below for up to 10 seconds and compare where it really went with what its sensors believe.</p>
-    <p class="controls"><kbd>&uarr;</kbd> accelerate &nbsp; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> steer &nbsp; <kbd>Enter</kbd> start again. The 10 seconds start with your first key press. A keyboard is needed.</p>
+    <p>Every sensor on a car is a little wrong. First, drive using only dead reckoning. On your next run, GPS updates snap the car to each noisy fix; after that, a Kalman filter combines GPS with speed and turn-rate sensors. When time runs out, the full true path and the route shown by the localization system appear together.</p>
+    <p class="controls"><kbd>&uarr;</kbd> accelerate &nbsp; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> steer &nbsp; <kbd>Enter</kbd> try the next localisation method. The 10 seconds start with your first key press. A keyboard is needed.</p>
 
     <canvas id="sim" width="800" height="500" aria-label="Top-down view of a car you can drive with the arrow keys"></canvas>
 
     <ul class="legend">
-      <li><i style="background:#ffffff"></i>True path</li>
-      <li><i style="background:#ff6b5a"></i>GPS readings (about 3 m of noise)</li>
-      <li><i style="background:#ffb347"></i>Dead reckoning from speed and turn-rate sensors</li>
+      <li><i style="background:#ff6b5a"></i>Obstacle</li>
+      <li><i style="background:#ffffff"></i>True path (shown at the end)</li>
+      <li><i style="background:#ffb347"></i>Estimated route (shown at the end)</li>
     </ul>
     <p id="result" aria-live="polite"></p>
     <button id="again" type="button">Drive again</button>
