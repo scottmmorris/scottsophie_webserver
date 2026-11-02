@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // Scene setup
 const scene = new THREE.Scene();
@@ -19,10 +19,10 @@ document.body.appendChild(renderer.domElement);
 // Load texture
 const textureLoader = new THREE.TextureLoader();
 const earthTexture = textureLoader.load(
-  'images/earth_atmos_2048.jpg'
+  '../images/earth_atmos_2048.jpg'
 );
 const starsTexture = textureLoader.load(
-  'images/2k_stars_milky_way.jpg'
+  '../images/2k_stars_milky_way.jpg'
 );
 
 // Globe
@@ -80,25 +80,25 @@ function addMarker(name, radius, scene, markers, lat, lon) {
 	markers.push(newMarker);
 }
 
-addMarker('travel/spain2024.html', radius, scene, markers, 41.3851, 2.1734);
-addMarker('travel/bulgaria2024.html', radius, scene, markers, 41.8399, 23.4860);
-addMarker('travel/iceland2025.html', radius, scene, markers, 64.1466, -21.9431);
-addMarker('travel/amsterdam2024.html', radius, scene, markers, 52.3667, 4.9424);
-addMarker('travel/germany2025.html', radius, scene, markers, 53.4818, 9.9958);
-addMarker('travel/fontainebleau2025.html', radius, scene, markers, 48.4039, 2.7010);
-addMarker('travel/greece2025.html', radius, scene, markers, 39.6265, 19.9210);
-addMarker('travel/albania2025.html', radius, scene, markers, 41.3287, 19.8177);
-addMarker('travel/milan2025.html', radius, scene, markers, 45.4699, 9.1788);
-addMarker('travel/sorrento2025.html', radius, scene, markers, 40.6265, 14.3769);
-addMarker('travel/scotland2025.html', radius, scene, markers, 57.4780, -4.2262);
-addMarker('travel/wales2025.html', radius, scene, markers, 51.6524, -4.8312);
-addMarker('travel/portland2025.html', radius, scene, markers, 50.5491, -2.43302);
-addMarker('travel/venice2025.html', radius, scene, markers, 45.4349, 12.3269);
-addMarker('travel/cogne2025.html', radius, scene, markers, 45.6084, 7.3559);
-addMarker('travel/dartmoor2025.html', radius, scene, markers, 50.5063, -3.8922);
-addMarker('travel/blakeney2025.html', radius, scene, markers, 52.9598, 1.0110);
-addMarker('travel/austria2025.html', radius, scene, markers, 47.1301, 10.2754);
-addMarker('travel/cairngorms2026.html', radius, scene, markers, 57.1886, -3.8288);
+addMarker('spain2024.html', radius, scene, markers, 41.3851, 2.1734);
+addMarker('bulgaria2025.html', radius, scene, markers, 41.8399, 23.4860);
+addMarker('iceland2025.html', radius, scene, markers, 64.1466, -21.9431);
+addMarker('amsterdam2024.html', radius, scene, markers, 52.3667, 4.9424);
+addMarker('germany2025.html', radius, scene, markers, 53.4818, 9.9958);
+addMarker('fontainebleau2025.html', radius, scene, markers, 48.4039, 2.7010);
+addMarker('greece2025.html', radius, scene, markers, 39.6265, 19.9210);
+addMarker('albania2025.html', radius, scene, markers, 41.3287, 19.8177);
+addMarker('milan2025.html', radius, scene, markers, 45.4699, 9.1788);
+addMarker('sorrento2025.html', radius, scene, markers, 40.6265, 14.3769);
+addMarker('scotland2025.html', radius, scene, markers, 57.4780, -4.2262);
+addMarker('wales2025.html', radius, scene, markers, 51.6524, -4.8312);
+addMarker('portland2025.html', radius, scene, markers, 50.5491, -2.43302);
+addMarker('venice2025.html', radius, scene, markers, 45.4349, 12.3269);
+addMarker('cogne2025.html', radius, scene, markers, 45.6084, 7.3559);
+addMarker('dartmoor2025.html', radius, scene, markers, 50.5063, -3.8922);
+addMarker('blakeney2025.html', radius, scene, markers, 52.9598, 1.0110);
+addMarker('austria2025.html', radius, scene, markers, 47.1301, 10.2754);
+addMarker('cairngorms2026.html', radius, scene, markers, 57.1886, -3.8288);
 
 // 🖱️ Raycaster for clicks
 const raycaster = new THREE.Raycaster();

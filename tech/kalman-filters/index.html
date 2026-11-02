@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The need for Kalman filters | Scott &amp; Sophie</title>
+  <link rel="icon" href="../../favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/src/site.css">
+</head>
+<body class="tech-page">
+  <a class="back" href="../">&larr; Tech</a>
+  <main class="column wide">
+    <h1>The need for Kalman filters</h1>
+    <p>Every sensor on a car is a little wrong. GPS jumps around by a few metres, and speed and turn-rate readings add up to a bigger error the longer you drive. Drive the car below for up to 10 seconds and compare where it really went with what its sensors believe.</p>
+    <p class="controls"><kbd>&uarr;</kbd> accelerate &nbsp; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> steer &nbsp; <kbd>Enter</kbd> start again. The 10 seconds start with your first key press. A keyboard is needed.</p>
+
+    <canvas id="sim" width="800" height="500" aria-label="Top-down view of a car you can drive with the arrow keys"></canvas>
+
+    <ul class="legend">
+      <li><i style="background:#ffffff"></i>True path</li>
+      <li><i style="background:#ff6b5a"></i>GPS readings (about 3 m of noise)</li>
+      <li><i style="background:#ffb347"></i>Dead reckoning from speed and turn-rate sensors</li>
+    </ul>
+    <p id="result" aria-live="polite"></p>
+    <button id="again" type="button">Drive again</button>
+  </main>
+  <script type="module" src="/src/kalman.js"></script>
+</body>
+</html>

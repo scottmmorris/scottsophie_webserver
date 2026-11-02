@@ -80,3 +80,14 @@ canvas {
 .polaroidPicture.hidden {
   opacity: 0;
 }
+
+.back {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	padding: .3rem .8rem;
+	border-radius: 99px;
+	background: rgba(255, 255, 255, .9);
+	color: #222;
+	font-size: 1rem;
+}
