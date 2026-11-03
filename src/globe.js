@@ -99,6 +99,9 @@ addMarker('dartmoor2025.html', radius, scene, markers, 50.5063, -3.8922);
 addMarker('blakeney2025.html', radius, scene, markers, 52.9598, 1.0110);
 addMarker('austria2025.html', radius, scene, markers, 47.1301, 10.2754);
 addMarker('cairngorms2026.html', radius, scene, markers, 57.1886, -3.8288);
+addMarker('shanghai2026.html', radius, scene, markers, 31.2222, 121.4581);
+addMarker('zhangjiajie2026.html', radius, scene, markers, 29.1294, 110.4783);
+addMarker('beijing2026.html', radius, scene, markers, 39.9075, 116.3972);
 
 // 🖱️ Raycaster for clicks
 const raycaster = new THREE.Raycaster();
