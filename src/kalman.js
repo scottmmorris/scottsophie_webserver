@@ -17,7 +17,7 @@ const V_MAX = 20;            // m/s
 
 const GPS_PERIOD = 0.5;      // s between GPS readings
 const GPS_SIGMA = 1;         // m
-const SPEED_SIGMA = 0.3;     // m/s
+const SPEED_SIGMA = 0.2;     // m/s
 const YAW_SIGMA = 0.05;      // rad/s
 const YAW_BIAS = 0.05;       // rad/s, constant gyro error
 const SPEED_SCALE = 1.04;    // wheel-speed reading is 4% high
