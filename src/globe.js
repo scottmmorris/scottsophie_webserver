@@ -104,7 +104,7 @@ addMarker('zhangjiajie2026.html', radius, scene, markers, 29.1294, 110.4783);
 addMarker('beijing2026.html', radius, scene, markers, 39.9075, 116.3972);
 addMarker('lofoten2026.html', radius, scene, markers, 68.1667, 13.7500);
 addMarker('hongkong2026.html', radius, scene, markers, 22.3027, 114.1772);
-addMarker('normandy2026.html', radius, scene, markers, 48.8566, 2.3522);
+addMarker('normandy2026.html', radius, scene, markers, 49.9200, 1.0800);
 
 // 🖱️ Raycaster for clicks
 const raycaster = new THREE.Raycaster();
