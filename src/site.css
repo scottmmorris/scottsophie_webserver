@@ -51,10 +51,12 @@ a { text-decoration: none; color: inherit; }
 
 /* Driving demo */
 .controls kbd { display: inline-block; min-width: 1.8em; padding: .05em .4em; text-align: center; border: 1px solid var(--paper); border-bottom-width: 3px; border-radius: 4px; font-family: system-ui, sans-serif; }
-#sim { display: block; width: 100%; height: auto; max-width: 800px; margin: 1.5rem 0 1rem; border: 2px solid var(--grid); border-radius: 6px; background: #12263a; }
+.sim-window { position: relative; max-width: 800px; margin: 1.5rem 0 1rem; }
+#sim { display: block; width: 100%; height: auto; border: 2px solid #887855; border-radius: 6px; background: #514638; }
+#result { position: absolute; left: 1rem; bottom: 1rem; width: min(25rem, calc(100% - 2rem)); max-height: 60%; overflow-y: auto; margin: 0; padding: .85rem 1rem; border: 1px solid rgba(232,241,248,.35); border-radius: 6px; background: rgba(23,20,15,.84); color: var(--paper); text-align: left; white-space: pre-line; font-size: clamp(.8rem, 1.8vw, 1rem); line-height: 1.45; }
+#result:empty { display: none; }
 .legend { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; padding: 0; margin: 0 0 1rem; }
 .legend i { display: inline-block; width: .9em; height: .9em; border-radius: 50%; margin-right: .5em; vertical-align: -.1em; }
-#result { min-height: 3.2em; }
 #again { padding: .5rem 1.2rem; font-size: 1rem; border: 2px solid var(--amber); border-radius: 99px; background: transparent; color: var(--amber); cursor: pointer; }
 #again:hover { background: var(--amber); color: var(--ink); }
 #again:disabled { opacity: .5; cursor: not-allowed; }

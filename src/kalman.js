@@ -16,11 +16,12 @@ const DRAG = 1.5;            // m/s^2 slowdown when Up is released
 const V_MAX = 20;            // m/s
 
 const GPS_PERIOD = 0.5;      // s between GPS readings
-const GPS_SIGMA = 1;         // m
+const GPS_SIGMA = 0.5;         // m
 const SPEED_SIGMA = 0.2;     // m/s
 const YAW_SIGMA = 0.05;      // rad/s
 const YAW_BIAS = 0.05;       // rad/s, constant gyro error
 const SPEED_SCALE = 1.04;    // wheel-speed reading is 4% high
+const OBSTACLE_SPREAD = 1.12;
 const OBSTACLES = [
   { x: -16, y: 20 }, { x: -5, y: 20 }, { x: 9, y: 20 }, { x: 22, y: 20 },
   { x: -28, y: 33 }, { x: -12, y: 33 }, { x: 5, y: 33 }, { x: 20, y: 33 }, { x: 34, y: 33 },
@@ -32,7 +33,7 @@ const OBSTACLES = [
   { x: -37, y: 130 }, { x: -18, y: 130 }, { x: 2, y: 130 }, { x: 22, y: 130 }, { x: 42, y: 130 },
   { x: -30, y: 148 }, { x: -10, y: 148 }, { x: 11, y: 148 }, { x: 33, y: 148 },
   { x: -18, y: 166 }, { x: 0, y: 166 }, { x: 18, y: 166 }, { x: 36, y: 166 },
-];
+].map(({ x, y }) => ({ x: x * OBSTACLE_SPREAD, y: y * OBSTACLE_SPREAD }));
 const OBSTACLE_RADIUS = 2.5;
 
 const keys = new Set();
@@ -157,13 +158,27 @@ function step(dt) {
     s.overview = createOverview();
     document.getElementById('again').disabled = false;
     const positionError = Math.hypot(estimate.x - s.x, estimate.y - s.y);
-    const hitText = `${s.hits.size} obstacle${s.hits.size === 1 ? '' : 's'} hit`;
-    const modeText = s.mode === 'dead-reckoning' ? 'dead reckoning' : s.mode === 'gps' ? 'GPS updates' : 'the Kalman filter';
-    const nextMode = attempt === 0 ? 'GPS updates' : 'the Kalman filter';
-    resultEl.textContent =
-      `Using ${modeText}, you travelled ${s.dist.toFixed(0)} m and ended ${positionError.toFixed(1)} m from your true position. ` +
-      `${hitText}. The white line is the true path; the orange dashed line is the route shown by the localization system. ` +
-      `Drive again to try ${nextMode}.`;
+    const hitText = `${s.hits.size} obstacle${s.hits.size === 1 ? '' : 's'}`;
+    if (s.mode === 'dead-reckoning') {
+      if (s.hits.size === 0) {
+        resultEl.textContent = `Wow, you got quite lucky!\n\nThe speed and turn rate sensors were a little wrong (ok, maybe ${positionError.toFixed(1)}m isn't a little bit). Try again with GPS updates as well?`;
+      } else {
+        resultEl.textContent = `Oops, you hit ${hitText}.\n\nThe speed and turn rate sensors were a little wrong (ok, maybe ${positionError.toFixed(1)}m isn't a little bit). Try again with GPS updates as well?`;
+      }
+    } else if (s.mode === 'gps') {
+      if (s.hits.size === 0) {
+        resultEl.textContent = `Wow, you got some skill!\n\nThe GPS updates were a bit jumpy and you only ended up ${positionError.toFixed(1)}m from your true position.\n\nTry one more time with a Kalman filter to combine the sensors.`;
+      } else {
+        resultEl.textContent = `Oops, you hit ${hitText}.\n\nThe GPS updates were a bit jumpy and made you run into obstacles, but you only ended up ${positionError.toFixed(1)}m from your true position.\n\nTry one more time with a Kalman filter to combine the sensors.`;
+      }
+    } else {
+      if (s.hits.size === 0) {
+        resultEl.textContent = `Wow, that was a bit better, wasn't it? You ended up only ${positionError.toFixed(1)}m from your true position and it was much easier to avoid the obstacles.\n\nThe Kalman filter balances the speed and turn sensors, which accumulate error, with GPS updates, which aren't always exact.`;
+      } else {
+        resultEl.textContent = `Oh dear, you still hit ${hitText}. The Kalman filter can only help so much; perhaps it's time to admit you're a bad driver...\n\nYou ended up ${positionError.toFixed(1)}m from your true position. The filter balances the speed and turn sensors, which accumulate error, with GPS updates, which aren't always exact.`;
+      }
+    }
+    resultEl.textContent += '\n\nPress Enter to start the next round.';
   }
 }
 
@@ -192,7 +207,7 @@ function toScreen(wx, wy) {
 
 function drawGrid() {
   const spacing = 10 * (s.overview ? s.overview.scale : SCALE);
-  ctx.strokeStyle = '#1e4363';
+  ctx.strokeStyle = '#75684f';
   ctx.lineWidth = 1;
   const [ox, oy] = toScreen(0, 0);
   ctx.beginPath();
@@ -249,13 +264,13 @@ function drawText(text, x, y, size, align = 'left') {
 }
 
 function draw() {
-  ctx.fillStyle = '#12263a';
+  ctx.fillStyle = '#514638';
   ctx.fillRect(0, 0, W, H);
   drawGrid();
   drawObstacles();
   if (s.phase === 'done') {
-    drawPath(s.path, '#ffffff', false);
-    drawPath(s.estimatePath, '#ffb347', true);
+    drawPath(s.path, '#2bff00', false);
+    drawPath(s.estimatePath, '#ff0000', true);
   }
   drawCar();
 

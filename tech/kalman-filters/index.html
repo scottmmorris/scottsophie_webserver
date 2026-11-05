@@ -3,25 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The need for Kalman filters | Scott &amp; Sophie</title>
+  <title>The incredible usefulness of Kalman filters | Scott &amp; Sophie</title>
   <link rel="icon" href="../../favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/src/site.css">
 </head>
 <body class="tech-page">
   <a class="back" href="../">&larr; Tech</a>
   <main class="column wide">
-    <h1>The need for Kalman filters</h1>
-    <p>Every sensor on a car is a little wrong. First, drive using only dead reckoning. On your next run, GPS updates snap the car to each noisy fix; after that, a Kalman filter combines GPS with speed and turn-rate sensors. When time runs out, the full true path and the route shown by the localization system appear together.</p>
-    <p class="controls"><kbd>&uarr;</kbd> accelerate &nbsp; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> steer &nbsp; <kbd>Enter</kbd> try the next localisation method. The 10 seconds start with your first key press. A keyboard is needed.</p>
+    <h1>The incredible usefulness of Kalman filters</h1>
+    <p>Every sensor is a little wrong. I can't count how many times my GPS has led me astray. Try driving this car around the obstacles!</p>
+    <p class="controls"><kbd>&uarr;</kbd> accelerate &nbsp; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> steer &nbsp;</p>
 
-    <canvas id="sim" width="800" height="500" aria-label="Top-down view of a car you can drive with the arrow keys"></canvas>
+    <div class="sim-window">
+      <canvas id="sim" width="800" height="500" aria-label="Top-down view of a car you can drive with the arrow keys"></canvas>
+      <p id="result" aria-live="polite"></p>
+    </div>
 
     <ul class="legend">
-      <li><i style="background:#ff6b5a"></i>Obstacle</li>
-      <li><i style="background:#ffffff"></i>True path (shown at the end)</li>
-      <li><i style="background:#ffb347"></i>Estimated route (shown at the end)</li>
+      <li><i style="background:#ff0000"></i>Where the sensors reported you went</li>
+      <li><i style="background:#2bff00"></i>Where you actually went</li>
     </ul>
-    <p id="result" aria-live="polite"></p>
     <button id="again" type="button">Drive again</button>
   </main>
   <script type="module" src="/src/kalman.js"></script>

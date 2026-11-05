@@ -84,7 +84,7 @@ addMarker('spain2024.html', radius, scene, markers, 41.3851, 2.1734);
 addMarker('bulgaria2025.html', radius, scene, markers, 41.8399, 23.4860);
 addMarker('iceland2025.html', radius, scene, markers, 64.1466, -21.9431);
 addMarker('amsterdam2024.html', radius, scene, markers, 52.3667, 4.9424);
-addMarker('germany2025.html', radius, scene, markers, 53.4818, 9.9958);
+addMarker('germany2025.html', radius, scene, markers, 52.5200, 13.4050);
 addMarker('fontainebleau2025.html', radius, scene, markers, 48.4039, 2.7010);
 addMarker('greece2025.html', radius, scene, markers, 39.6265, 19.9210);
 addMarker('albania2025.html', radius, scene, markers, 41.3287, 19.8177);
@@ -105,6 +105,8 @@ addMarker('beijing2026.html', radius, scene, markers, 39.9075, 116.3972);
 addMarker('lofoten2026.html', radius, scene, markers, 68.1667, 13.7500);
 addMarker('hongkong2026.html', radius, scene, markers, 22.3027, 114.1772);
 addMarker('normandy2026.html', radius, scene, markers, 49.9200, 1.0800);
+addMarker('chamonix2026.html', radius, scene, markers, 46.9238, 6.2693);
+addMarker('hamburg2026.html', radius, scene, markers, 53.4818, 9.9958);
 
 // 🖱️ Raycaster for clicks
 const raycaster = new THREE.Raycaster();
