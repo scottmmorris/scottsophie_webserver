@@ -72,7 +72,7 @@ const markerGeometry = new THREE.SphereGeometry(0.05, 16, 16);
 const markers = [];
 
 function addMarker(name, radius, scene, markers, lat, lon) {
-	const markerGeometry = new THREE.SphereGeometry(0.05, 16, 16);
+	const markerGeometry = new THREE.SphereGeometry(0.04, 16, 16);
 	const newMarker = new THREE.Mesh(markerGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
 	newMarker.name = name;
 	newMarker.position.copy(latLonToVector3(lat, lon, radius + 0.05));
@@ -80,24 +80,31 @@ function addMarker(name, radius, scene, markers, lat, lon) {
 	markers.push(newMarker);
 }
 
-addMarker('spain2024.html', radius, scene, markers, 41.3851, 2.1734);
-addMarker('bulgaria2025.html', radius, scene, markers, 41.8399, 23.4860);
-addMarker('iceland2025.html', radius, scene, markers, 64.1466, -21.9431);
+addMarker('barcelona2024.html', radius, scene, markers, 41.3851, 2.1734);
+addMarker('madrid2024.html', radius, scene, markers, 40.4168, -3.7038);
+addMarker('seville2024.html', radius, scene, markers, 37.3925, -5.9941);
+addMarker('bansko2025.html', radius, scene, markers, 41.8399, 23.4860);
+addMarker('reykjavik2025.html', radius, scene, markers, 64.1466, -21.9431);
 addMarker('amsterdam2024.html', radius, scene, markers, 52.3667, 4.9424);
-addMarker('germany2025.html', radius, scene, markers, 52.5200, 13.4050);
+addMarker('frankfurt2025.html', radius, scene, markers,  50.1109, 8.6821);
+addMarker('dortmund2025.html', radius, scene, markers, 51.5142, 7.4684);
+addMarker('dusseldorf2025.html', radius, scene, markers, 51.2333, 6.7833);
+addMarker('koln2025.html', radius, scene, markers, 50.9352, 6.9531);
+addMarker('berlin2025.html', radius, scene, markers, 52.5200, 13.4050);
 addMarker('fontainebleau2025.html', radius, scene, markers, 48.4039, 2.7010);
-addMarker('greece2025.html', radius, scene, markers, 39.6265, 19.9210);
-addMarker('albania2025.html', radius, scene, markers, 41.3287, 19.8177);
+addMarker('corfu2025.html', radius, scene, markers, 39.6265, 19.9210);
+addMarker('sarande2025.html', radius, scene, markers, 40.1017, 19.7447);
+addMarker('tirana2025.html', radius, scene, markers, 41.3275, 19.8189);
 addMarker('milan2025.html', radius, scene, markers, 45.4699, 9.1788);
 addMarker('sorrento2025.html', radius, scene, markers, 40.6265, 14.3769);
-addMarker('scotland2025.html', radius, scene, markers, 57.4780, -4.2262);
-addMarker('wales2025.html', radius, scene, markers, 51.6524, -4.8312);
+addMarker('inverness2025.html', radius, scene, markers, 57.4780, -4.2262);
+addMarker('pembroke2025.html', radius, scene, markers, 51.6524, -4.8312);
 addMarker('portland2025.html', radius, scene, markers, 50.5491, -2.43302);
 addMarker('venice2025.html', radius, scene, markers, 45.4349, 12.3269);
 addMarker('cogne2025.html', radius, scene, markers, 45.6084, 7.3559);
 addMarker('dartmoor2025.html', radius, scene, markers, 50.5063, -3.8922);
 addMarker('blakeney2025.html', radius, scene, markers, 52.9598, 1.0110);
-addMarker('austria2025.html', radius, scene, markers, 47.1301, 10.2754);
+addMarker('stantons2025.html', radius, scene, markers, 47.1301, 10.2754);
 addMarker('cairngorms2026.html', radius, scene, markers, 57.1886, -3.8288);
 addMarker('shanghai2026.html', radius, scene, markers, 31.2222, 121.4581);
 addMarker('zhangjiajie2026.html', radius, scene, markers, 29.1294, 110.4783);
@@ -107,6 +114,7 @@ addMarker('hongkong2026.html', radius, scene, markers, 22.3027, 114.1772);
 addMarker('normandy2026.html', radius, scene, markers, 49.9200, 1.0800);
 addMarker('chamonix2026.html', radius, scene, markers, 46.9238, 6.2693);
 addMarker('hamburg2026.html', radius, scene, markers, 53.4818, 9.9958);
+addMarker('bern2026.html', radius, scene, markers, 46.9480, 7.4474);
 
 // 🖱️ Raycaster for clicks
 const raycaster = new THREE.Raycaster();
