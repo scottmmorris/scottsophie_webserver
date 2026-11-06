@@ -115,6 +115,13 @@ addMarker('normandy2026.html', radius, scene, markers, 49.9200, 1.0800);
 addMarker('chamonix2026.html', radius, scene, markers, 46.9238, 6.2693);
 addMarker('hamburg2026.html', radius, scene, markers, 53.4818, 9.9958);
 addMarker('bern2026.html', radius, scene, markers, 46.9480, 7.4474);
+addMarker('bolzano2026.html', radius, scene, markers, 46.5000, 11.3500);
+addMarker('dubrovnik2026.html', radius, scene, markers, 42.6403, 18.1083);
+addMarker('montreux2026.html', radius, scene, markers, 46.4312, 6.9107);
+addMarker('rome2026.html', radius, scene, markers, 41.9028, 12.4963);
+addMarker('split2026.html', radius, scene, markers, 43.5081, 16.4402);
+addMarker('wengen2026.html', radius, scene, markers, 46.6030, 7.9190);
+addMarker('zurich2026.html', radius, scene, markers, 47.3744, 8.5411);
 
 // 🖱️ Raycaster for clicks
 const raycaster = new THREE.Raycaster();
